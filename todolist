@@ -1,0 +1,133 @@
+import React,{useState} from "react";
+
+
+function AnExample()
+{
+
+
+  const [list,setList] = useState([])
+const [adding ,setAdding] = useState({
+  name :'',
+  id: ''
+})
+const [editible,setEditing] = useState(
+  {
+    id:"",
+    editingOn :false
+  }
+)
+
+const dataSave = (e) =>
+{
+console.log(e.target.value)
+}
+
+const changeMessage = (e) =>
+{
+
+setAdding({
+  ...adding,
+  name : e.target.value
+});
+}
+
+const addData = (e) =>
+{
+  e.preventDefault();
+  const newList = {name : adding.name,
+  id : new Date().getTime().toString(), }
+  setList([...list,newList])
+  setAdding({
+    name:"",
+    id:""
+  })
+ 
+
+// console.log(newList)
+}
+const deleteMessage =(id) =>
+{
+ let newTodos = list.filter((eachObj) =>{
+return eachObj.id != id;
+ })
+ setList(newTodos)
+}
+const editHandler = (id) =>
+{
+ setEditing(
+  {...editible,
+  id:id,
+  editingOn :true})
+ let editableitem = list.find((eachObj) =>
+ {
+ return  eachObj.id === id
+
+ })
+setAdding(
+  {
+    ...adding,
+    name:editableitem.name,
+    id:editableitem.id
+  }
+)
+}
+const editChanges = (e) =>
+{
+e.preventDefault();
+let latesttodo = list.map((eachItem) =>
+{
+ 
+  if(eachItem.id === editible.id)
+  {
+return {
+  name : adding.name,
+   id : editible.id }
+  }
+  else{
+    return eachItem;
+  }
+})
+setList(latesttodo)
+setAdding({
+  name :"",
+  id:""
+})
+setEditing(
+  {
+    id:"",
+    editingOn :false
+
+  }
+)
+
+}
+return (
+  <div>
+    <form>
+     
+    < input type = "text"  id= "text" placeholder="add todo" value = {adding.name} onChange ={changeMessage}/>
+    {
+       editible.editingOn ? <button onClick={editChanges}>edit</button> : <button onClick={addData}>add</button>
+      }
+    </form>
+    <hr/>
+    <div>
+      {list.length === 0 && <h4>No items in todo</h4>}
+      <ol>
+        {list.map((eachObj) =>{
+
+          const {name,id} = eachObj;
+          return (
+           <li key = {id}>{name}
+          <button onClick= {()=>editHandler(id)}>edit</button>
+          <button onClick = {() => deleteMessage(id)}>delete</button>
+          </li>
+          )
+        })}
+       
+      </ol>
+    </div>
+  </div>
+)
+  }
+export default AnExample
