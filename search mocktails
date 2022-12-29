@@ -1,0 +1,64 @@
+import React ,{useState,useEffect} from "react";
+const URL = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
+function MainFunction(){
+const [drinks,setDrinks] = useState([])
+const [searchItem,setSearchItem] = useState("")
+const [iserror,setIsError] = useState({status : false,message:''})
+
+
+
+
+const fetchDrinks = async (apiUrl)=>
+
+{
+    setIsError({status:false,message:''})
+    try {
+
+        const response = await fetch(apiUrl);
+        const {drinks} = await response.json();///destructuring the drinks as it is coming from an object
+        // console.log(drinks);
+        setDrinks(drinks)
+        setIsError({status:false,message:''})
+        // console.log(drinks)
+        if(!drinks){
+            throw new Error("data not found")
+        }
+       
+    
+    } catch (error) {
+        setIsError({status:true,
+            message: error.message || 'SomeThing went Wrong'})
+        
+    }
+   
+}
+
+useEffect(() => {
+const correctSearch = `${URL} ${searchItem}`//here we are giving the seach term to add the above url woth search term
+fetchDrinks(correctSearch)
+},[searchItem])
+
+
+
+return(
+   <div>
+    <input type = "text" id = "text" placeholder="search here" value = {searchItem}
+     onChange = {(e) => setSearchItem(e.target.value)}/>
+    <hr/>
+    {iserror && iserror.status === true && <h3>{iserror.message}</h3>}
+     <div>
+        <ul>
+            {drinks.map((eachDrink) => {
+                const {strDrink,idDrink,strDrinkThumb} = eachDrink;
+                return <li key = {idDrink}>
+                    <img src = {strDrinkThumb} alt = {strDrink}/>
+                    <div>{strDrink}</div>
+                </li>
+            })}
+        </ul>
+     </div>
+   </div>
+)
+
+}
+export default MainFunction
